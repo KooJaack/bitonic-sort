@@ -43,6 +43,10 @@
 // e.g., $ONEAPI_ROOT/dev-utilities/<version>/include/dpc_common.hpp
 #include "dpc_common.hpp"
 
+#if FPGA || FPGA_EMULATOR
+#include <sycl/ext/intel/fpga_extensions.hpp>
+#endif
+
 using namespace sycl;
 using namespace std;
 
@@ -224,6 +228,17 @@ void Usage(string prog_name, int exponent) {
 int main(int argc, char *argv[]) {
   int n, seed, size;
   int exp_max = log2(numeric_limits<int>::max());
+
+#if FPGA_EMULATOR
+  // DPC++ extension: FPGA emulator selector on systems without FPGA card.
+  ext::intel::fpga_emulator_selector d_selector;
+#elif FPGA
+  // DPC++ extension: FPGA selector on systems with FPGA card.
+  ext::intel::fpga_selector d_selector;
+#else
+  // The default device selector will select the most performant device.
+  default_selector d_selector;
+#endif
 
   // Read parameters.
   try {

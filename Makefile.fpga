@@ -3,7 +3,7 @@ CXXFLAGS = -O2 -g -std=c++17
 
 SRC := src/bitonic-sort.cpp
 
-.PHONY: fpga_emu run_emu  run_emu_usm clean 
+.PHONY: fpga_emu run_emu run_emu_usm clean 
 
 fpga_emu: bitonic-sort.fpga_emu
 
