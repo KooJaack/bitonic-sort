@@ -53,6 +53,21 @@ using namespace std;
 
 #define DEBUG 0
 
+// Create an exception handler for asynchronous SYCL exceptions
+static auto exception_handler = [](sycl::exception_list e_list) {
+  for (std::exception_ptr const &e : e_list) {
+    try {
+      std::rethrow_exception(e);
+      }
+    catch (std::exception const &e) {
+#if _DEBUG
+      std:: cout << "Failure" << std::endl;
+#endif
+      std::terminate();
+    }
+  }
+}
+
 void ParallelBitonicSort(int data_gpu[], int n, queue &q) {
   // n: the exponent used to set the array size. Array size = power(2, n)
   int size = pow(2, n);
@@ -224,21 +239,6 @@ void Usage(string prog_name, int exponent) {
           "enter the corresponding\n";
   cout << "    exponent betwwen 0 and " << exponent - 1 << ".\n";
   cout << " k: Seed used to generate a random sequence.\n";
-}
-
-// Create an exception handler for asynchronous SYCL exceptions
-static auto exception_handler = [](sycl::exception_list e_list){
-  for (std::exception_ptr const &e : e_list){
-    try {
-      std::rethrow_exception(e);
-      }
-    catch (std::exception const &e){
-#if _DEBUG
-      std:: cout << "Failure" << std::endl;
-#endif
-      std::terminate();
-    }
-  }
 }
 
 int main(int argc, char *argv[]) {
