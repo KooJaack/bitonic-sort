@@ -66,7 +66,7 @@ static auto exception_handler = [](sycl::exception_list e_list) {
       std::terminate();
     }
   }
-}
+};
 
 void ParallelBitonicSort(int data_gpu[], int n, queue &q) {
   // n: the exponent used to set the array size. Array size = power(2, n)
