@@ -4,8 +4,8 @@
   "categories": ["Toolkit/oneAPI Direct Programming/DPC++/Graph Traversal"],
   "description": "Bitonic Sort using Data Parallel C++ (DPC++)",
   "toolchain": [ "dpcpp" ],
-  "targetDevice": [ "CPU", "GPU" ],
-  "languages": [ { "cpp": {} } ],
+  "targetDevice": [ "CPU", "GPU", "FPGA" ],
+  "languages": [{"cpp": {"properties": {"projectOptions": [{"projectType": "makefile"}]}}}],
   "os": [ "linux", "windows" ],
   "builder": [ "ide", "cmake" ],
   "ciTests": {
@@ -17,12 +17,36 @@
                         "make",
                         "make run"
                  ]
-        }],
+        }, 
+        {
+                "id": "fpga_emu_bitonic",
+                "steps": [
+                        "make fpga_emu -f Makefile.fpga",
+                        "make run_emu -f Makefile.fpga",
+                        "make clean -f Makefile.fpga"
+                ]
+        },
+        {
+                "id": "fpga_report_bitonic",
+                "steps": [
+                  "make report -f Makefile.fpga",
+                  "make clean -f Makefile.fpga"
+                ]
+              }
+        ],
         "windows": [{
                 "steps": [
                         "MSBuild bitonic-sort.sln /t:Rebuild /p:Configuration=\"Release\"",
                         "cd x64/Release",
                         "bitonic-sort.exe 21 47"
+                ]
+        },
+        {
+                "id": "fpga_emu_bitonic",
+                "steps": [
+                  "nmake -f Makefile.win.fpga",
+                  "nmake -f Makefile.win.fpga run",
+                  "nmake -f Makefile.win.fpga clean"
                 ]
         }]
   }
