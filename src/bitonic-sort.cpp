@@ -226,6 +226,21 @@ void Usage(string prog_name, int exponent) {
   cout << " k: Seed used to generate a random sequence.\n";
 }
 
+// Create an exception handler for asynchronous SYCL exceptions
+static auto exception_handler = [](sycl::exception_list e_list){
+  for (std::exception_ptr const &e : e_list){
+    try {
+      std::rethrow_exception(e);
+      }
+    catch (std::exception const &e){
+#if _DEBUG
+      std:: cout << "Failure" << std::endl;
+#endif
+      std::terminate();
+    }
+  }
+}
+
 int main(int argc, char *argv[]) {
   int n, seed, size;
   int exp_max = log2(numeric_limits<int>::max());
@@ -261,7 +276,7 @@ int main(int argc, char *argv[]) {
   cout << "\nArray size: " << size << ", seed: " << seed << "\n";
 
   // Create queue on implementation-chosen default device.
-  queue q;
+  queue q(d_selector, exception_handler);
 
   cout << "Device: " << q.get_device().get_info<info::device::name>() << "\n";
 
